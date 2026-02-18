@@ -16,7 +16,6 @@ export class PostsService {
   findAll(): PostInterface[] {
     return this.posts;
   }
-
   findOne(id: number): PostInterface {
     const singlePost = this.posts.find((post) => post.id === id);
     if (!singlePost) {
@@ -35,12 +34,6 @@ export class PostsService {
     };
     this.posts.push(newPost);
     return newPost;
-  }
-
-  private getNextId(): number {
-    return this.posts.length > 0
-      ? Math.max(...this.posts.map((post) => post.id)) + 1
-      : 1;
   }
 
   update(
@@ -64,5 +57,21 @@ export class PostsService {
     this.posts[index] = updatedPost;
 
     return updatedPost;
+  }
+
+  remove(id: number): { message: string } {
+    const currentDeleteIndex = this.posts.findIndex((post) => post.id === id);
+    if (currentDeleteIndex === -1) {
+      throw new NotFoundException(`Post with ID ${id} is not found`);
+    }
+
+    this.posts.splice(currentDeleteIndex, 1);
+    return { message: `Post with ID ${id} has been deleted` };
+  }
+
+  private getNextId(): number {
+    return this.posts.length > 0
+      ? Math.max(...this.posts.map((post) => post.id)) + 1
+      : 1;
   }
 }
