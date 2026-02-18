@@ -10,7 +10,7 @@ async function bootstrap() {
       whitelist: true, // strips properties that don't have decorators
       forbidNonWhitelisted: true,
       transform: true,
-      disableErrorMessages: true,
+      // disableErrorMessages: true,
     }),
   );
 

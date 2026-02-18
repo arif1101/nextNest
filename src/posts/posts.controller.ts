@@ -14,6 +14,7 @@ import {
 import { PostsService } from './posts.service';
 import type { PostInterface } from './interfaces/post.interface';
 import { CreatePostDto } from './dto/create-post-dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -39,18 +40,15 @@ export class PostsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(
-    @Body() dto: CreatePostDto,
-    createPostData: Omit<PostInterface, 'id' | 'createdAt'>,
-  ): PostInterface {
-    return this.postsService.create(createPostData);
+  create(@Body() dto: CreatePostDto): PostInterface {
+    return this.postsService.create(dto);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updatePostData: Partial<Omit<PostInterface, 'id' | 'createdAt'>>,
+    @Body() updatePostData: UpdatePostDto,
   ): PostInterface {
     return this.postsService.update(id, updatePostData);
   }
