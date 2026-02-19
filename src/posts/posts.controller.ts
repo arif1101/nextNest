@@ -9,53 +9,49 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import type { PostInterface } from './interfaces/post.interface';
 import { CreatePostDto } from './dto/create-post-dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { PostExistPipe } from './pipes/post-exist-pipe';
+import { Post as PostEntity } from './entities/post.entity';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get()
-  findAll(@Query('search') search?: string): PostInterface[] {
-    const extractAllPosts = this.postsService.findAll();
-
-    if (search) {
-      return extractAllPosts.filter((post) =>
-        post.title.toLowerCase().includes(search.toLowerCase()),
-      );
-    }
-
-    return extractAllPosts;
+  async findAll(): Promise<PostEntity[]> {
+    return this.postsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): PostInterface {
+  async findOne(
+    @Param('id', ParseIntPipe, PostExistPipe) id: number,
+  ): Promise<PostEntity> {
     return this.postsService.findOne(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreatePostDto): PostInterface {
+  create(@Body() dto: CreatePostDto): Promise<PostEntity> {
     return this.postsService.create(dto);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  update(
-    @Param('id', ParseIntPipe) id: number,
+  async update(
+    @Param('id', ParseIntPipe, PostExistPipe) id: number,
     @Body() updatePostData: UpdatePostDto,
-  ): PostInterface {
+  ): Promise<PostEntity> {
     return this.postsService.update(id, updatePostData);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseIntPipe) id: number): void {
-    this.postsService.remove(id);
+  async remove(
+    @Param('id', ParseIntPipe, PostExistPipe) id: number,
+  ): Promise<void> {
+    await this.postsService.remove(id);
   }
 }

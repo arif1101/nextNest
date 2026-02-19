@@ -21,4 +21,6 @@ export class UpdatePostDto {
     typeof value === 'string' ? value?.trim() : value,
   )
   content?: string;
+
+
 }
