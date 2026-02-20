@@ -12,6 +12,12 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 
+type RefreshTokenPayload = {
+  sub: string; // or number depending on your user.id type
+  iat?: number;
+  exp?: number;
+};
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -99,22 +105,23 @@ export class AuthService {
 
   async refreshToken(refreshToken: string) {
     try {
-      const payload = this.jwtService.verify(refreshToken, {
-        secret: 'refresh_secret',
-      });
+      const payload = this.jwtService.verify<RefreshTokenPayload>(
+        refreshToken,
+        {
+          secret: 'refresh_secret',
+        },
+      );
 
       const user = await this.usersRepository.findOne({
-        where: { id: payload.sub },
+        where: { id: parseInt(payload.sub, 10) },
       });
 
-      if (!user) {
-        throw new UnauthorizedException('Invalid token');
-      }
+      if (!user) throw new UnauthorizedException('Invalid token');
 
       const accessToken = this.generateAccessToken(user);
 
       return { accessToken };
-    } catch (e) {
+    } catch {
       throw new UnauthorizedException('Invalid token');
     }
   }
