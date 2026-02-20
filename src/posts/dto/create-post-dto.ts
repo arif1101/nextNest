@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Transform } from 'class-transformer';
-import { IsString, Length, Matches } from 'class-validator';
+import { IsString, Length } from 'class-validator';
 
 export class CreatePostDto {
   @IsString({ message: 'Title must be a string' })
@@ -19,9 +21,6 @@ export class CreatePostDto {
   @IsString({ message: 'Author name must be a string' })
   @Length(2, 50, {
     message: 'Author name must be between 2 and 50 characters',
-  })
-  @Matches(/^[A-Za-z\s]+$/, {
-    message: 'Author name can contain only letters and spaces',
   })
   @Transform(({ value }) => value.trim())
   authorName: string;
