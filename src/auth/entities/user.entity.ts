@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Post as PostEntity } from 'src/posts/entities/post.entity';
 import {
   Column,

@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
   ConflictException,
   Injectable,
@@ -24,7 +29,9 @@ export class AuthService {
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
     private jwtService: JwtService,
-  ) {}
+  ) {
+    bcrypt.hash('test1234', 10).then(console.log);
+  }
 
   async register(RegisterDto: RegisterDto) {
     const existingUser = await this.usersRepository.findOne({
@@ -124,6 +131,19 @@ export class AuthService {
     } catch {
       throw new UnauthorizedException('Invalid token');
     }
+  }
+
+  async getUserById(userId: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const { password, ...result } = user;
+    return result;
   }
 
   private async hashPassword(password: string): Promise<string> {
